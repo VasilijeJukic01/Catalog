@@ -78,7 +78,11 @@ fun BreedCard(
                     .padding(horizontal = 10.dp)
                     .weight(weight = 1f),
                 fontSize = 12.sp,
-                text = breed.description,
+                text = if (breed.description.length > 250) {
+                    "${breed.description.take(250)}..."
+                } else {
+                    breed.description
+                },
                 lineHeight = 16.sp
             )
         }

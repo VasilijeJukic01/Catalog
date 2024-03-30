@@ -1,4 +1,4 @@
-package com.example.catalog.compose
+package com.example.catalog.compose.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.catalog.R
+import com.example.catalog.compose.BreedCard
 import com.example.catalog.model.Breed
 import com.example.catalog.repo.DataSample
 import com.example.catalog.ui.theme.CatalogTheme

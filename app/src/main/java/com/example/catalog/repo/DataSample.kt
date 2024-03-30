@@ -1,20 +1,45 @@
 package com.example.catalog.repo
 
 import com.example.catalog.model.Breed
+import com.example.catalog.model.Characteristics
 
 val DataSample = listOf(
     Breed(
         id = "1",
-        name = "Abyssinian",
-        altNames = listOf("Aby"),
-        description = "The Abyssinian is easy to care for, and a joy to have in your home. They’re affectionate cats and love both people and other animals.",
-        temperament = listOf("Active", "Energetic", "Independent", "Intelligent", "Gentle")
+        name = "Maine Coon",
+        altNames = listOf("Coon Cat", "Maine Cat"),
+        description = "The Maine Coon is a large and sociable cat, hence its nickname, 'the gentle giant.'",
+        temperament = listOf("Intelligent", "Gentle", "Relaxed", "Playful"),
+        origin = "United States",
+        weight = "9-18 pounds",
+        lifeSpan = "9-15 years",
+        rare = 0,
+        characteristics = Characteristics(
+            adaptability = 5,
+            affectionLevel = 5,
+            energyLevel = 3,
+            intelligence = 5,
+            strangerFriendly = 3
+        ),
+        wikipediaUrl = "https://en.wikipedia.org/wiki/Maine_Coon"
     ),
     Breed(
         id = "2",
-        name = "Aegean",
-        altNames = listOf("Greek cats"),
-        description = "Aegean cats are a naturally occurring landrace of domestic cat originating from the Cycladic Islands of Greece.",
-        temperament = listOf("Affectionate", "Social", "Intelligent", "Playful", "Active")
-    ),
+        name = "Siamese",
+        altNames = listOf("Siam"),
+        description = "The Siamese cat is one of the first distinctly recognized breeds of Asian cat.",
+        temperament = listOf("Active", "Playful", "Intelligent", "Affectionate"),
+        origin = "Thailand",
+        weight = "8-15 pounds",
+        lifeSpan = "10-15 years",
+        rare = 0,
+        characteristics = Characteristics(
+            adaptability = 5,
+            affectionLevel = 5,
+            energyLevel = 4,
+            intelligence = 5,
+            strangerFriendly = 3
+        ),
+        wikipediaUrl = "https://en.wikipedia.org/wiki/Siamese_cat"
+    )
 )

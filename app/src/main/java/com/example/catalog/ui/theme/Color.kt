@@ -12,3 +12,4 @@ val Pink40 = Color(0xFF7D5260)
 
 // My colors
 val cardColor = Color(0xFFE4B198)
+val topBarColor = Color(0xFFFFA174)
