@@ -33,7 +33,7 @@ import com.example.catalog.ui.theme.CatalogTheme
 @Composable
 fun BreedListScreen(
     items: List<Breed>,
-    onClick: () -> Unit
+    onClick: (Breed) -> Unit
 ) {
     val logo: Painter = painterResource(id = R.drawable.logo_vector)
 
@@ -74,7 +74,7 @@ fun BreedListScreen(
                         key(it.id) {
                           BreedCard(
                               breed = it,
-                              onClick = { onClick() },
+                              onClick = { onClick(it) },
                           )
                         }
                     }

@@ -39,7 +39,8 @@ import com.example.catalog.ui.theme.topBarColor
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BreedDetailsScreen(
-    data: Breed
+    data: Breed,
+    onBackClick: () -> Unit
 ) {
     Surface {
         Column (
@@ -59,7 +60,7 @@ fun BreedDetailsScreen(
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = { /*TODO: Implement onClick*/ }) {
+                    IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "Back"
@@ -220,7 +221,8 @@ fun PreviewDetailsScreen() {
                     strangerFriendly = 3
                 ),
                 wikipediaUrl = "https://en.wikipedia.org/wiki/Siamese_cat"
-            )
+            ),
+            onBackClick = {}
         )
     }
 
