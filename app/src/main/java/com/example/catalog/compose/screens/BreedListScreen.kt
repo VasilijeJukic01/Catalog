@@ -1,38 +1,28 @@
 package com.example.catalog.compose.screens
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.key
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.*
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.*
+import androidx.compose.ui.tooling.preview.*
+import androidx.compose.ui.unit.*
+import androidx.lifecycle.viewmodel.compose.*
+import androidx.navigation.*
+import androidx.navigation.compose.*
 import com.example.catalog.R
-import com.example.catalog.compose.BreedCard
-import com.example.catalog.model.Breed
-import com.example.catalog.repo.DataSample
-import com.example.catalog.ui.theme.CatalogTheme
+import com.example.catalog.compose.*
+import com.example.catalog.model.*
+import com.example.catalog.model.list.*
+import com.example.catalog.repo.*
+import com.example.catalog.ui.theme.*
 
 @ExperimentalMaterial3Api
 @Composable
 fun BreedListScreen(
-    items: List<Breed>,
+    state : BreedListState,
     onClick: (Breed) -> Unit
 ) {
     val logo: Painter = painterResource(id = R.drawable.logo_vector)
@@ -56,44 +46,99 @@ fun BreedListScreen(
             }
         },
         content = {
-            val scrollState = rememberScrollState()
+            BreedList(
+                items = state.breeds,
+                padding = it,
+                onClick = onClick
+            )
 
-            Column (
-                modifier = Modifier
-                    .verticalScroll(scrollState)
-                    .fillMaxSize()
-                    .padding(it),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top,
-            ) {
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                items.forEach {
-                    Column {
-                        key(it.id) {
-                          BreedCard(
-                              breed = it,
-                              onClick = { onClick(it) },
-                          )
+            if (state.breeds.isEmpty()) {
+                when (state.fetching) {
+                    true -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
                         }
                     }
-
-                    Spacer(modifier = Modifier.height(16.dp))
+                    false -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = if (state.error == null) "No breeds found" else "Error: ${state.error}"
+                            )
+                        }
+                    }
                 }
-
             }
         }
     )
 }
 
+@Composable
+private fun BreedList(
+    items: List<Breed>,
+    padding: PaddingValues,
+    onClick: (Breed) -> Unit
+) {
+    val scrollState = rememberScrollState()
+
+    Column (
+        modifier = Modifier
+            .verticalScroll(scrollState)
+            .fillMaxSize()
+            .padding(padding),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top,
+    ) {
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        items.forEach {
+            Column {
+                key(it.id) {
+                    BreedCard(
+                        breed = it,
+                        onClick = { onClick(it) },
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+    }
+}
+
+// Navigation
+@OptIn(ExperimentalMaterial3Api::class)
+fun NavGraphBuilder.breedsListScreen(
+    route: String,
+    navController: NavController,
+) = composable (route = route) {
+
+    val breedListViewModel = viewModel<BreedListViewModel>()
+    val state by breedListViewModel.state.collectAsState()
+
+    BreedListScreen(
+        state = state,
+        onClick = { breed ->
+            navController.navigate(route = "breeds/${breed.id}")
+        },
+    )
+}
+
+// Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 fun PreviewCatListScreen() {
     CatalogTheme {
         BreedListScreen(
-            items = DataSample,
+            state = BreedListState(breeds = DataSample),
             onClick = {},
         )
     }

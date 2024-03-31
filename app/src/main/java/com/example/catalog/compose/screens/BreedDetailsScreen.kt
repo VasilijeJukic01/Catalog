@@ -32,8 +32,13 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
+import com.example.catalog.compose.NoDataContent
 import com.example.catalog.model.Breed
 import com.example.catalog.model.Characteristics
+import com.example.catalog.repo.BreedRepository
 import com.example.catalog.ui.theme.topBarColor
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -195,6 +200,29 @@ fun BreedCharacteristicBar(characteristicName: String, characteristicValue: Int)
                 .height(8.dp)
         )
         Spacer(modifier = Modifier.height(8.dp))
+    }
+}
+
+fun NavGraphBuilder.breedDetailsScreen(
+    route: String,
+    navController: NavController,
+) {
+    composable(route = route) { navBackStackEntry ->
+        val dataId = navBackStackEntry.arguments?.getString("id")
+            ?: throw IllegalArgumentException("id is required.")
+
+        val data = BreedRepository.getById(id = dataId)
+
+        if (data != null) {
+            BreedDetailsScreen(
+                data = data,
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
+        } else {
+            NoDataContent(id = dataId)
+        }
     }
 }
 
