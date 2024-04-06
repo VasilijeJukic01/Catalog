@@ -2,11 +2,12 @@ package com.example.catalog.api
 
 import retrofit2.http.GET
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface BreedsApi {
 
     @GET("breeds")
-    suspend fun getAllBreeds(): List<BreedApiModel>
+    suspend fun getAllBreeds(@Query("limit") limit: Int = 50): List<BreedApiModel>
 
     @GET("breeds/{id}")
     suspend fun getBreed(

@@ -39,6 +39,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import coil.compose.SubcomposeAsyncImage
 import com.example.catalog.compose.NoDataContent
 import com.example.catalog.model.Breed
 import com.example.catalog.model.Characteristics
@@ -128,10 +129,17 @@ fun BreedDataLazyColumn(
                 text = "Also known as: " + data.altNames.joinToString(", ")
             )
             // TODO: Load image from URL
+            /*
             Box(
                 modifier = Modifier
                     .size(200.dp)
                     .background(Color.LightGray)
+            )
+             */
+            SubcomposeAsyncImage(
+                modifier = Modifier.size(200.dp),
+                model = data.imageUrl,
+                contentDescription = null,
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(style = MaterialTheme.typography.bodyLarge, text = data.description)
@@ -306,7 +314,8 @@ fun PreviewDetailsScreen() {
                         intelligence = 5,
                         strangerFriendly = 3
                     ),
-                    wikipediaUrl = "https://en.wikipedia.org/wiki/Siamese_cat"
+                    wikipediaUrl = "https://en.wikipedia.org/wiki/Siamese_cat",
+                    imageUrl = ""
                 ),
             ),
             onBackClick = {}

@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class BreedListViewModel (
-    private val repository: BreedRepository = BreedRepository
+    private val repository: BreedRepository
 ) : ViewModel() {
 
     // State
@@ -70,13 +70,15 @@ class BreedListViewModel (
             setState { copy(fetching = true) }
             try {
                 withContext(Dispatchers.IO) {
-                    repository.fetchBreeds()
+                    repository.fetchAllBreeds()
+                    println("Fetched breeds")
                 }
                 setState { copy(breeds = repository.allBreeds(), currentBreeds = repository.allBreeds()) }
             } catch (error: Exception) {
                 setState { copy(error = BreedListState.BreedListError.BreedListUpdateFailed(cause = error)) }
             } finally {
                 setState { copy(fetching = false) }
+                println("Fetch breeds done")
             }
         }
     }

@@ -10,7 +10,7 @@ val okHttpClient = OkHttpClient.Builder()
     // Custom header interceptor
     .addInterceptor {
         val updatedRequest = it.request().newBuilder()
-            .addHeader("CustomHeader", "CustomValue")
+            .addHeader("x-api-key", "live_xHucNym4M9fZLY6W6xSfTWpcs2dx4W1WZedHYBDmUFyQT0rgSXMbheVH6Bt4FlBu")
             .build()
         it.proceed(updatedRequest)
     }
@@ -23,7 +23,7 @@ val okHttpClient = OkHttpClient.Builder()
     .build()
 
 val retrofit: Retrofit = Retrofit.Builder()
-    .baseUrl("https://jsonplaceholder.typicode.com/")
+    .baseUrl("https://api.thecatapi.com/v1/")
     .client(okHttpClient)
     .addConverterFactory(AppJson.asConverterFactory("application/json".toMediaType()))
     .build()

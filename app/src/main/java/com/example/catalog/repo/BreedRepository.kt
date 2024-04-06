@@ -1,23 +1,31 @@
 package com.example.catalog.repo
 
+import com.example.catalog.api.BreedsApi
+import com.example.catalog.api.networking.retrofit
+import com.example.catalog.api.toBreed
 import com.example.catalog.model.Breed
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.withContext
 import kotlin.time.Duration.Companion.seconds
 
 object BreedRepository {
 
+    private val breedsApi: BreedsApi = retrofit.create(BreedsApi::class.java)
     private val breedList = MutableStateFlow(listOf<Breed>())
 
     // Flow
-    // TODO: Change later to API call
-    suspend fun fetchBreeds() {
+    suspend fun fetchAllBreeds() {
         delay(2.seconds)
-        breedList.update { DataSample.toMutableList() }
+        val breedApiModels = breedsApi.getAllBreeds()
+        val breeds = breedApiModels.map { it.toBreed() }
+        breedList.update { breeds }
     }
 
     suspend fun fetchBreedDetails(breedId: String) {

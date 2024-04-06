@@ -11,7 +11,8 @@ data class Breed(
     val lifeSpan: String,
     val rare: Int,
     val characteristics: Characteristics,
-    val wikipediaUrl: String
+    val wikipediaUrl: String,
+    val imageUrl: String
 ) {
 
 }
