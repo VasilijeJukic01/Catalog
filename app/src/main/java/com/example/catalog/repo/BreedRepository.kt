@@ -24,7 +24,7 @@ object BreedRepository {
         delay(1.seconds)
     }
 
-    fun observeBreeds() : Flow<List<Breed>> = breedList.asStateFlow()
+    private fun observeBreeds() : Flow<List<Breed>> = breedList.asStateFlow()
 
     fun observeBreedDetails(breedId: String) : Flow<Breed?> {
         return observeBreeds()
@@ -37,15 +37,6 @@ object BreedRepository {
     fun getById(id: String) : Breed? {
         return breedList.value.find {
             it.id == id
-        }
-    }
-
-    fun remove(id: String) {
-        breedList.update { list ->
-            list.toMutableList().apply {
-                val item = find { it.id == id }
-                remove(item)
-            }
         }
     }
 

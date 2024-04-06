@@ -44,7 +44,6 @@ import com.example.catalog.model.Breed
 import com.example.catalog.model.Characteristics
 import com.example.catalog.model.details.BreedDetailsState
 import com.example.catalog.model.details.BreedDetailsViewModel
-import com.example.catalog.repo.BreedRepository
 import com.example.catalog.ui.theme.topBarColor
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -85,25 +84,27 @@ fun BreedDetailsScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            if (state.fetching) {
-                LinearProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(4.dp)
-                )
-            }
-            else if (state.error != null) {
-                Text(
-                    text = "Error: ${state.error}",
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-            }
-            else if (state.data != null) {
-                BreedDataLazyColumn(data = state.data)
-            }
-            else {
-                NoDataContent(id = state.breedId)
+            when {
+                (state.fetching) -> {
+                    LinearProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(4.dp)
+                    )
+                }
+                (state.error != null) -> {
+                    Text(
+                        text = "Error: ${state.error}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
+                (state.data != null) -> {
+                    BreedDataLazyColumn(data = state.data)
+                }
+                else -> {
+                    NoDataContent(id = state.breedId)
+                }
             }
         }
     }
@@ -238,6 +239,7 @@ fun BreedDataLazyColumn(
     }
 }
 
+// Components
 @Composable
 fun BreedCharacteristicBar(characteristicName: String, characteristicValue: Int) {
     Column {
@@ -252,12 +254,11 @@ fun BreedCharacteristicBar(characteristicName: String, characteristicValue: Int)
     }
 }
 
+// Navigation
 fun NavGraphBuilder.breedDetailsScreen(
     route: String,
     navController: NavController,
-) = composable(
-    route = route
-) { navBackStackEntry ->
+) = composable(route = route) { navBackStackEntry ->
     val dataId = navBackStackEntry.arguments?.getString("id")
         ?: throw IllegalArgumentException("id is required.")
 
@@ -280,6 +281,7 @@ fun NavGraphBuilder.breedDetailsScreen(
     )
 }
 
+// Preview
 @Preview
 @Composable
 fun PreviewDetailsScreen() {
