@@ -6,6 +6,7 @@ data class BreedDetailsState (
     val fetching: Boolean = false,
     val breedId: String = "",
     val data: Breed? = null,
+    val navigateToWiki: String? = null,
     val error: BreedDetailsError? = null
 ) {
     sealed class BreedDetailsError {

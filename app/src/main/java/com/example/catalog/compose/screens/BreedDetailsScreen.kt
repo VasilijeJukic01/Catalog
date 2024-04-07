@@ -1,10 +1,14 @@
 package com.example.catalog.compose.screens
 
-import androidx.compose.foundation.background
+import android.content.Intent
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -14,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,6 +50,7 @@ import com.example.catalog.compose.NoDataContent
 import com.example.catalog.model.Breed
 import com.example.catalog.model.Characteristics
 import com.example.catalog.model.details.BreedDetailsState
+import com.example.catalog.model.details.BreedDetailsUiEvent
 import com.example.catalog.model.details.BreedDetailsViewModel
 import com.example.catalog.ui.theme.topBarColor
 
@@ -51,8 +58,23 @@ import com.example.catalog.ui.theme.topBarColor
 @Composable
 fun BreedDetailsScreen(
     state: BreedDetailsState,
+    eventPublisher: (BreedDetailsUiEvent) -> Unit,
     onBackClick: () -> Unit
 ) {
+
+    val openUrlLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        _ ->
+    }
+
+    LaunchedEffect(state.navigateToWiki) {
+        state.navigateToWiki?.let { url ->
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                data = Uri.parse(url)
+            }
+            openUrlLauncher.launch(intent)
+        }
+    }
+
     Surface {
         Column (
             modifier = Modifier.fillMaxWidth()
@@ -101,7 +123,10 @@ fun BreedDetailsScreen(
                     )
                 }
                 (state.data != null) -> {
-                    BreedDataLazyColumn(data = state.data)
+                    BreedDataLazyColumn(
+                        data = state.data,
+                        eventPublisher = eventPublisher
+                    )
                 }
                 else -> {
                     NoDataContent(id = state.breedId)
@@ -113,7 +138,8 @@ fun BreedDetailsScreen(
 
 @Composable
 fun BreedDataLazyColumn(
-    data: Breed
+    data: Breed,
+    eventPublisher: (BreedDetailsUiEvent) -> Unit
 ) {
     LazyColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
         item {
@@ -128,18 +154,15 @@ fun BreedDataLazyColumn(
                 style = MaterialTheme.typography.bodyLarge.copy(fontStyle = FontStyle.Italic),
                 text = "Also known as: " + data.altNames.joinToString(", ")
             )
-            // TODO: Load image from URL
-            /*
-            Box(
-                modifier = Modifier
-                    .size(200.dp)
-                    .background(Color.LightGray)
-            )
-             */
             SubcomposeAsyncImage(
                 modifier = Modifier.size(200.dp),
                 model = data.imageUrl,
                 contentDescription = null,
+                loading = {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                }
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(style = MaterialTheme.typography.bodyLarge, text = data.description)
@@ -235,7 +258,7 @@ fun BreedDataLazyColumn(
 
             // Wikipedia
             Button(
-                onClick = { /*TODO: Implement onClick*/ },
+                onClick = { eventPublisher(BreedDetailsUiEvent.VisitWiki(data.wikipediaUrl)) },
                 shape = RectangleShape,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -283,6 +306,9 @@ fun NavGraphBuilder.breedDetailsScreen(
 
     BreedDetailsScreen(
         state = state.value,
+        eventPublisher = {
+            breedDetailsViewModel.setEvent(it)
+        },
         onBackClick = {
             navController.popBackStack()
         }
@@ -318,6 +344,7 @@ fun PreviewDetailsScreen() {
                     imageUrl = ""
                 ),
             ),
+            eventPublisher = {},
             onBackClick = {}
         )
     }

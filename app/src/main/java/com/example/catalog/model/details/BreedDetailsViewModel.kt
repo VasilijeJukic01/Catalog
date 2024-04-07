@@ -4,9 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.catalog.repo.BreedRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -16,31 +16,52 @@ class BreedDetailsViewModel (
     private val repository: BreedRepository = BreedRepository
 ) : ViewModel() {
 
-    // Encapsulation
+    // State
     private val stateFlow = MutableStateFlow(BreedDetailsState(breedId = breedId))
     val state = stateFlow.asStateFlow()
 
     private fun setState(reducer: BreedDetailsState.() -> BreedDetailsState) = stateFlow.getAndUpdate(reducer)
 
+    // Event
+    private val events = MutableSharedFlow<BreedDetailsUiEvent>()
+
+    fun setEvent(event: BreedDetailsUiEvent) = viewModelScope.launch { events.emit(event) }
+
     init {
-        observeBreed()
+        handleEvents()
         fetchBreed()
     }
 
-    private fun observeBreed() {
+    // Events
+    private fun handleEvents() {
         viewModelScope.launch {
-            repository.observeBreedDetails(breedId)
-                .filterNotNull()
-                .collect { setState { copy(data = it) } }
+            events.collect { event ->
+                handleEvent(event)
+            }
         }
     }
 
+    private fun handleEvent(event: BreedDetailsUiEvent) {
+        when (event) {
+            // Hyperlink
+            is BreedDetailsUiEvent.VisitWiki -> {
+                val breed = stateFlow.value.data
+                if (breed != null) {
+                    setState { copy(navigateToWiki = breed.wikipediaUrl) }
+                }
+
+            }
+        }
+    }
+
+    // Fetching
     private fun fetchBreed() {
         viewModelScope.launch {
             setState { copy(fetching = true) }
             try {
                 withContext(Dispatchers.IO) {
-                    repository.fetchBreedDetails(breedId)
+                    val breed = repository.fetchBreedDetails(breedId)
+                    setState { copy(data = breed) }
                 }
             } catch (e: Exception) {
                 setState {

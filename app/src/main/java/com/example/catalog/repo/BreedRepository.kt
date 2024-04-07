@@ -22,21 +22,13 @@ object BreedRepository {
 
     // Flow
     suspend fun fetchAllBreeds() {
-        delay(2.seconds)
         val breedApiModels = breedsApi.getAllBreeds()
         val breeds = breedApiModels.map { it.toBreed() }
         breedList.update { breeds }
     }
 
-    suspend fun fetchBreedDetails(breedId: String) {
-        delay(1.seconds)
-    }
-
-    private fun observeBreeds() : Flow<List<Breed>> = breedList.asStateFlow()
-
-    fun observeBreedDetails(breedId: String) : Flow<Breed?> {
-        return observeBreeds()
-            .map { breeds -> breeds.find { it.id == breedId } }
+    fun fetchBreedDetails(breedId: String): Breed? {
+        return breedList.value.find { it.id == breedId }
     }
 
     // CRUD
