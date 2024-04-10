@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.catalog.repo.BreedRepository
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.getAndUpdate
@@ -22,36 +21,8 @@ class BreedDetailsViewModel (
 
     private fun setState(reducer: BreedDetailsState.() -> BreedDetailsState) = stateFlow.getAndUpdate(reducer)
 
-    // Event
-    private val events = MutableSharedFlow<BreedDetailsUiEvent>()
-
-    fun setEvent(event: BreedDetailsUiEvent) = viewModelScope.launch { events.emit(event) }
-
     init {
-        handleEvents()
         fetchBreed()
-    }
-
-    // Events
-    private fun handleEvents() {
-        viewModelScope.launch {
-            events.collect { event ->
-                handleEvent(event)
-            }
-        }
-    }
-
-    private fun handleEvent(event: BreedDetailsUiEvent) {
-        when (event) {
-            // Hyperlink
-            is BreedDetailsUiEvent.VisitWiki -> {
-                val breed = stateFlow.value.data
-                if (breed != null) {
-                    setState { copy(navigateToWiki = breed.wikipediaUrl) }
-                }
-
-            }
-        }
     }
 
     // Fetching

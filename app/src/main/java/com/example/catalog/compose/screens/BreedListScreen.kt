@@ -38,7 +38,6 @@ fun BreedListScreen(
     onClick: (Breed) -> Unit
 ) {
     val logo: Painter = painterResource(id = R.drawable.logo_vector)
-    val searchText by remember { mutableStateOf(state.filter) }
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
@@ -46,7 +45,7 @@ fun BreedListScreen(
         topBar = {
             CustomTopBar(
                 logo = logo,
-                searchText = remember { mutableStateOf(searchText) },
+                state = state,
                 eventPublisher = eventPublisher,
                 keyboardController = keyboardController,
                 focusManager = focusManager
@@ -68,11 +67,13 @@ fun BreedListScreen(
 @Composable
 private fun CustomTopBar(
     logo: Painter,
-    searchText: MutableState<String>,
+    state: BreedListState,
     eventPublisher: (BreedListUiEvent) -> Unit,
     keyboardController: SoftwareKeyboardController?,
     focusManager: FocusManager
 ) {
+    val searchText = remember { mutableStateOf(state.filter) }
+
     Column {
         CenterAlignedTopAppBar(
             title = {
