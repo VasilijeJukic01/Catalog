@@ -21,7 +21,8 @@ val DataSample = listOf(
             intelligence = 5,
             strangerFriendly = 3
         ),
-        wikipediaUrl = "https://en.wikipedia.org/wiki/Maine_Coon"
+        wikipediaUrl = "https://en.wikipedia.org/wiki/Maine_Coon",
+        imageUrl = ""
     ),
     Breed(
         id = "2",
@@ -40,6 +41,7 @@ val DataSample = listOf(
             intelligence = 5,
             strangerFriendly = 3
         ),
-        wikipediaUrl = "https://en.wikipedia.org/wiki/Siamese_cat"
+        wikipediaUrl = "https://en.wikipedia.org/wiki/Siamese_cat",
+        imageUrl = ""
     )
 )
