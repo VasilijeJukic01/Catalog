@@ -24,12 +24,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.catalog.model.Breed
 import com.example.catalog.repo.DataSample
 import com.example.catalog.ui.theme.CatalogTheme
 import com.example.catalog.ui.theme.cardColor
+import androidx.compose.ui.unit.*
 
 @Composable
 fun BreedCard(
@@ -48,6 +47,7 @@ fun BreedCard(
             containerColor = cardColor
         )
     ) {
+        // Name
         Row {
             Text(
                 text = breed.name,
@@ -59,6 +59,7 @@ fun BreedCard(
             )
         }
 
+        // Alternative names
         Row {
             Text(
                 modifier = Modifier
@@ -75,6 +76,7 @@ fun BreedCard(
             )
         }
 
+        // Description
         Row {
             Text(
                 modifier = Modifier
@@ -90,6 +92,7 @@ fun BreedCard(
             )
         }
 
+        // Temperament
         Row {
             breed.temperament.take(3).forEach { temperament ->
                 SuggestionChip(
@@ -100,6 +103,7 @@ fun BreedCard(
             }
         }
 
+        // Arrow icon
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End

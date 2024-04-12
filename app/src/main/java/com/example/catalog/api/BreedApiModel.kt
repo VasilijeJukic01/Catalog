@@ -1,7 +1,5 @@
 package com.example.catalog.api
 
-import com.example.catalog.model.Breed
-import com.example.catalog.model.Characteristics
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -44,26 +42,3 @@ data class Image(
     val height: Int = -1,
     val url: String = ""
 )
-
-fun BreedApiModel.toBreed(): Breed {
-    return Breed(
-        id = this.id,
-        name = this.name,
-        altNames = this.altNames.split(","),
-        description = this.description,
-        temperament = this.temperament.split(","),
-        origin = this.origin,
-        weight = this.weight.imperial,
-        lifeSpan = this.lifeSpan,
-        rare = this.rare,
-        characteristics = Characteristics(
-            adaptability = this.adaptability,
-            affectionLevel = this.affectionLevel,
-            energyLevel = this.energyLevel,
-            intelligence = this.intelligence,
-            strangerFriendly = this.strangerFriendly
-        ),
-        wikipediaUrl = this.wikipediaUrl,
-        imageUrl = this.image.url
-    )
-}

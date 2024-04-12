@@ -18,8 +18,6 @@ import androidx.compose.ui.res.*
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.*
 import androidx.navigation.*
 import androidx.navigation.compose.*
@@ -186,15 +184,9 @@ fun NavGraphBuilder.breedsListScreen(
     navController: NavController,
 ) = composable (route = route) {
 
-    val breedListViewModel = viewModel<BreedListViewModel>(
-        factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                @Suppress("UNCHECKED_CAST")
-                return BreedListViewModel(BreedRepository) as T
-            }
-        }
-    )
+    val breedListViewModel = viewModel<BreedListViewModel>()
 
+    // Transforms state into state that can be observed by Compose
     val state by breedListViewModel.state.collectAsState()
 
     BreedListScreen(
