@@ -2,6 +2,8 @@ package com.example.catalog.compose.screens
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -123,31 +125,22 @@ private fun BreedList(
     padding: PaddingValues,
     onClick: (Breed) -> Unit
 ) {
-    val scrollState = rememberScrollState()
-
-    Column (
+    LazyColumn (
         modifier = Modifier
-            .verticalScroll(scrollState)
             .fillMaxSize()
             .padding(padding),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top,
     ) {
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        items.forEach {
-            Column {
-                key(it.id) {
-                    BreedCard(
-                        breed = it,
-                        onClick = { onClick(it) },
-                    )
-                }
-            }
+        item {
             Spacer(modifier = Modifier.height(16.dp))
         }
-
+        items(items) { breed ->
+            BreedCard(
+                breed = breed,
+                onClick = { onClick(breed) },
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+        }
     }
 }
 
