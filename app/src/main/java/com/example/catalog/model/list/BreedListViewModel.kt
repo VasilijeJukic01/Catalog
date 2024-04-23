@@ -2,6 +2,7 @@ package com.example.catalog.model.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.catalog.model.BreedMapper
 import com.example.catalog.repo.BreedRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
@@ -13,8 +14,16 @@ import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/*
+Hot Flow - Type of flow that is active independently of the presence of collectors.
+
+SharedFlow - Hot Flow that emits values to its collectors.
+StateFlow - Hot Flow that represents a state. It emits the current state to new collectors.
+ */
+
 class BreedListViewModel (
-    private val repository: BreedRepository
+    private val breedMapper: BreedMapper = BreedMapper,
+    private val repository: BreedRepository = BreedRepository
 ) : ViewModel() {
 
     // State
@@ -24,9 +33,9 @@ class BreedListViewModel (
     private fun setState(reducer: BreedListState.() -> BreedListState) = stateFlow.getAndUpdate(reducer)
 
     // Event
-    private val events = MutableSharedFlow<BreedListUiEvent>()
+    private val eventsFlow = MutableSharedFlow<BreedListUiEvent>()
 
-    fun setEvent(event: BreedListUiEvent) = viewModelScope.launch { events.emit(event) }
+    fun setEvent(event: BreedListUiEvent) = viewModelScope.launch { eventsFlow.emit(event) }
 
     init {
         handleEvents()
@@ -37,7 +46,7 @@ class BreedListViewModel (
     @OptIn(FlowPreview::class)
     private fun handleEvents() {
         viewModelScope.launch {
-            events
+            eventsFlow
                 .debounce(300)
                 .collect { event ->
                     handleEvent(event)
@@ -73,7 +82,10 @@ class BreedListViewModel (
                     repository.fetchAllBreeds()
                     println("Fetched breeds")
                 }
-                setState { copy(breeds = repository.allBreeds(), currentBreeds = repository.allBreeds()) }
+                setState { copy(
+                    breeds = repository.allBreeds().map { breedMapper.mapToBreed(it) },
+                    currentBreeds = repository.allBreeds().map { breedMapper.mapToBreed(it) })
+                }
             } catch (error: Exception) {
                 setState { copy(error = BreedListState.BreedListError.BreedListUpdateFailed(cause = error)) }
             } finally {

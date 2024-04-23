@@ -2,6 +2,8 @@ package com.example.catalog.compose.screens
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -18,8 +20,6 @@ import androidx.compose.ui.res.*
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.*
 import androidx.navigation.*
 import androidx.navigation.compose.*
@@ -125,31 +125,22 @@ private fun BreedList(
     padding: PaddingValues,
     onClick: (Breed) -> Unit
 ) {
-    val scrollState = rememberScrollState()
-
-    Column (
+    LazyColumn (
         modifier = Modifier
-            .verticalScroll(scrollState)
             .fillMaxSize()
             .padding(padding),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top,
     ) {
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        items.forEach {
-            Column {
-                key(it.id) {
-                    BreedCard(
-                        breed = it,
-                        onClick = { onClick(it) },
-                    )
-                }
-            }
+        item {
             Spacer(modifier = Modifier.height(16.dp))
         }
-
+        items(items) { breed ->
+            BreedCard(
+                breed = breed,
+                onClick = { onClick(breed) },
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+        }
     }
 }
 
@@ -186,15 +177,9 @@ fun NavGraphBuilder.breedsListScreen(
     navController: NavController,
 ) = composable (route = route) {
 
-    val breedListViewModel = viewModel<BreedListViewModel>(
-        factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                @Suppress("UNCHECKED_CAST")
-                return BreedListViewModel(BreedRepository) as T
-            }
-        }
-    )
+    val breedListViewModel = viewModel<BreedListViewModel>()
 
+    // Transforms state into state that can be observed by Compose
     val state by breedListViewModel.state.collectAsState()
 
     BreedListScreen(
